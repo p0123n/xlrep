@@ -1,0 +1,3 @@
+This package is a tiny framework for creating xls reports. It is entirely based on xlwt package. The main purpuse is to simplify construction of reportorts using xlwt library.
+
+Take a look at examples to see how it can be used.

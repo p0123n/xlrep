@@ -269,7 +269,7 @@ class Report(object):
         self._top, self._left = 0, 0
         self.caption = caption
         self.desc = desc
-        self.cols_width = 0x00ff
+        self.cols_width = None
         self.rows_height = 0x00ff
         self.row_header_style = XFStyle()
         self.col_header_style = XFStyle()
@@ -416,13 +416,21 @@ class Report(object):
         else:
             left_offset, row_headers = 0, []
 
+        # Fixme  
+        for i,c in enumerate(self.cols.get_fields()):
+            if c.width or self.cols_width:
+                ws.col(left_offset + i).width = c.width or self.cols_width
+
+        # Fixme
+        #for i,r in enumerate(self.rows.get_fields()):
+        #    ws.row(top_offset + i).height = 1000#r.height or self.rows_height
+
         # Drawing columns headers
         for item, r, c, r_size, c_size in col_headers:
             header_style = item.header_style or item.style \
                     or self.col_header_style
             ws.write_merge(r, r + r_size - 1, left_offset + c, left_offset + c + c_size - 1, item.name, header_style)
             if isinstance(item, Field):
-                ws.col(left_offset + c).width = item.width or self.cols_width
                 if item.height:
                     ws.row(r).height = item.height
                     ws.row(r).height_mismatch = True
@@ -435,7 +443,6 @@ class Report(object):
                     or self.row_header_style
             ws.write_merge(top_offset + r, top_offset + r + r_size - 1, c, c + c_size - 1, item.name, header_style)
             if isinstance(item, Field):
-                ws.row(top_offset + r).height = item.width or self.cols_width
                 ws.row(top_offset + r).level = item._level
         left += left_offset
 
